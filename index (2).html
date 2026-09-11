@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#090a12" />
+    <meta
+      name="description"
+      content="A neon social link page for your online presence."
+    />
+    <title>Neon Social Linker</title>
+    <style>
+      :root {
+        --bg: #080910;
+        --panel: rgba(16, 17, 29, 0.78);
+        --line: rgba(255, 255, 255, 0.12);
+        --muted: #9a9bab;
+        --text: #f8f8ff;
+        --cyan: #53f5ff;
+        --pink: #ff4fd8;
+        --purple: #8e5cff;
+        --lime: #c2ff65;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        min-height: 100%;
+        background: var(--bg);
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+        color: var(--text);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at 8% 12%, rgba(142, 92, 255, 0.2), transparent 28rem),
+          radial-gradient(circle at 90% 8%, rgba(255, 79, 216, 0.14), transparent 26rem),
+          radial-gradient(circle at 50% 100%, rgba(83, 245, 255, 0.1), transparent 34rem),
+          var(--bg);
+      }
+
+      body::before,
+      body::after {
+        position: fixed;
+        z-index: -1;
+        width: 34rem;
+        height: 34rem;
+        border-radius: 50%;
+        content: "";
+        filter: blur(70px);
+        opacity: 0.12;
+        pointer-events: none;
+      }
+
+      body::before {
+        top: 32%;
+        left: -18rem;
+        background: var(--cyan);
+        animation: drift 14s ease-in-out infinite alternate;
+      }
+
+      body::after {
+        right: -18rem;
+        bottom: 8%;
+        background: var(--pink);
+        animation: drift 17s ease-in-out infinite alternate-reverse;
+      }
+
+      .shell {
+        width: min(100% - 32px, 720px);
+        margin: 0 auto;
+        padding: 28px 0 30px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+      }
+
+      .live {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .live::before {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: var(--lime);
+        box-shadow: 0 0 12px var(--lime);
+        content: "";
+      }
+
+      .signal {
+        position: relative;
+        width: 58px;
+        height: 28px;
+        overflow: hidden;
+        border: 1px solid rgba(83, 245, 255, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .signal::before,
+      .signal::after {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        width: 4px;
+        height: 7px;
+        border-radius: 2px;
+        background: var(--cyan);
+        box-shadow: 8px 0 0 var(--purple), 16px 0 0 var(--pink),
+          24px 0 0 var(--cyan), 32px 0 0 var(--purple);
+        content: "";
+        transform: translateY(-50%);
+      }
+
+      .signal::after {
+        opacity: 0.35;
+        filter: blur(3px);
+      }
+
+      .card {
+        position: relative;
+        overflow: hidden;
+        padding: clamp(28px, 7vw, 54px) clamp(20px, 6vw, 54px) 22px;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 30px;
+        background:
+          linear-gradient(145deg, rgba(255, 255, 255, 0.06), transparent 28%),
+          var(--panel);
+        box-shadow:
+          0 30px 100px rgba(0, 0, 0, 0.36),
+          inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(18px);
+      }
+
+      .card::before {
+        position: absolute;
+        top: -190px;
+        left: -15%;
+        width: 130%;
+        height: 240px;
+        border-radius: 50%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(83, 245, 255, 0.14),
+          rgba(255, 79, 216, 0.16),
+          transparent
+        );
+        content: "";
+        filter: blur(26px);
+        transform: rotate(-7deg);
+      }
+
+      .profile {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+      }
+
+      .avatar {
+        position: relative;
+        display: grid;
+        width: 94px;
+        height: 94px;
+        margin: 0 auto 20px;
+        place-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 50%;
+        background:
+          linear-gradient(140deg, rgba(83, 245, 255, 0.95), rgba(142, 92, 255, 0.9) 44%, rgba(255, 79, 216, 0.95));
+        box-shadow:
+          0 0 0 7px rgba(83, 245, 255, 0.08),
+          0 0 34px rgba(83, 245, 255, 0.4),
+          0 0 60px rgba(255, 79, 216, 0.22);
+      }
+
+      .avatar::before {
+        position: absolute;
+        inset: 6px;
+        border: 1px solid rgba(255, 255, 255, 0.58);
+        border-radius: inherit;
+        content: "";
+      }
+
+      .avatar span {
+        position: relative;
+        font-size: 1.55rem;
+        font-weight: 950;
+        letter-spacing: -0.1em;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        color: var(--cyan);
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.2rem, 8vw, 4.2rem);
+        font-weight: 950;
+        letter-spacing: -0.07em;
+        line-height: 0.95;
+      }
+
+      h1 .gradient {
+        display: block;
+        color: transparent;
+        background: linear-gradient(95deg, var(--cyan), #fff 44%, var(--pink));
+        background-clip: text;
+        -webkit-background-clip: text;
+      }
+
+      .bio {
+        max-width: 420px;
+        margin: 17px auto 0;
+        color: var(--muted);
+        font-size: 0.98rem;
+        line-height: 1.65;
+      }
+
+      .links {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        gap: 13px;
+        margin-top: 34px;
+      }
+
+      .link-button {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-height: 68px;
+        padding: 10px 16px 10px 12px;
+        overflow: hidden;
+        color: var(--text);
+        text-decoration: none;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.045);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transition:
+          border-color 180ms ease,
+          background 180ms ease,
+          transform 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      .link-button::before {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(100deg, transparent 15%, rgba(255, 255, 255, 0.1), transparent 82%);
+        content: "";
+        opacity: 0;
+        transform: translateX(-70%);
+        transition:
+          opacity 180ms ease,
+          transform 500ms ease;
+      }
+
+      .link-button:hover,
+      .link-button:focus-visible {
+        border-color: rgba(83, 245, 255, 0.62);
+        background: rgba(83, 245, 255, 0.08);
+        box-shadow:
+          0 10px 28px rgba(0, 0, 0, 0.24),
+          0 0 25px rgba(83, 245, 255, 0.1);
+        outline: none;
+        transform: translateY(-3px);
+      }
+
+      .link-button:hover::before,
+      .link-button:focus-visible::before {
+        opacity: 1;
+        transform: translateX(70%);
+      }
+
+      .icon {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        width: 44px;
+        height: 44px;
+        flex: 0 0 44px;
+        place-items: center;
+        border-radius: 13px;
+        color: #080910;
+      }
+
+      .icon.instagram {
+        background: linear-gradient(140deg, #ffd36b, #ff4f9a 47%, #8e5cff);
+        box-shadow: 0 0 18px rgba(255, 79, 216, 0.3);
+      }
+
+      .icon.facebook {
+        background: linear-gradient(140deg, #58a8ff, #1877f2);
+        box-shadow: 0 0 18px rgba(24, 119, 242, 0.34);
+      }
+
+      .icon.phone {
+        background: linear-gradient(140deg, var(--lime), var(--cyan));
+        box-shadow: 0 0 18px rgba(83, 245, 255, 0.28);
+      }
+
+      .icon svg {
+        width: 22px;
+        height: 22px;
+      }
+
+      .link-copy {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        gap: 3px;
+        min-width: 0;
+        text-align: left;
+      }
+
+      .link-copy strong {
+        font-size: 1rem;
+        font-weight: 850;
+      }
+
+      .link-copy span {
+        overflow: hidden;
+        color: var(--muted);
+        font-size: 0.8rem;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .arrow {
+        position: relative;
+        z-index: 1;
+        margin-left: auto;
+        color: var(--muted);
+        font-size: 1.3rem;
+        transition: color 180ms ease, transform 180ms ease;
+      }
+
+      .link-button:hover .arrow,
+      .link-button:focus-visible .arrow {
+        color: var(--cyan);
+        transform: translateX(3px);
+      }
+
+      .note {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        margin: 25px 0 0;
+        color: var(--muted);
+        font-size: 0.74rem;
+      }
+
+      .note::before {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--pink);
+        box-shadow: 0 0 10px var(--pink);
+        content: "";
+      }
+
+      footer {
+        padding-top: 18px;
+        color: rgba(154, 155, 171, 0.64);
+        font-size: 0.7rem;
+        text-align: center;
+      }
+
+      @keyframes drift {
+        to {
+          transform: translate(4rem, -2rem) scale(1.1);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .shell {
+          width: min(100% - 20px, 720px);
+          padding-top: 16px;
+        }
+
+        .topbar {
+          margin-bottom: 12px;
+        }
+
+        .card {
+          border-radius: 24px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <div class="topbar">
+        <span class="live">Available online</span>
+        <span class="signal" aria-label="Signal active"></span>
+      </div>
+
+      <section class="card" aria-labelledby="profile-name">
+        <div class="profile">
+          <!-- Change the initials here if you want a different avatar mark. -->
+          <div class="avatar" aria-hidden="true"><span>YN</span></div>
+          <p class="eyebrow">Connect with me</p>
+          <!-- Replace the name, handle, and bio with your details. -->
+          <h1 id="profile-name">Your <span class="gradient">Network.</span></h1>
+          <p class="bio">
+            One place for updates, conversations, and everything I’m building next.
+          </p>
+        </div>
+
+        <nav class="links" aria-label="Social links">
+          <!-- Instagram profile -->
+          <a
+            class="link-button"
+            href="https://www.instagram.com/caramel_forsure"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span class="icon instagram" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+                <circle cx="12" cy="12" r="4"></circle>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle>
+              </svg>
+            </span>
+            <span class="link-copy">
+              <strong>Instagram</strong>
+              <span>@caramel_forsure</span>
+            </span>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+
+          <!-- Facebook profile -->
+          <a
+            class="link-button"
+            href="https://www.facebook.com/brent.panzo"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span class="icon facebook" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M13.5 21v-8h2.7l.4-3h-3.1V8.1c0-.9.3-1.5 1.5-1.5h1.7V4a22 22 0 0 0-2.5-.1c-2.5 0-4.2 1.5-4.2 4.3V10H7.5v3H10v8h3.5Z"></path>
+              </svg>
+            </span>
+            <span class="link-copy">
+              <strong>Facebook</strong>
+              <span>brent.panzo</span>
+            </span>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+
+          <!-- Phone contact -->
+          <a class="link-button" href="tel:+639566531170">
+            <span class="icon phone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M7.5 3.8 5.2 4.9a2 2 0 0 0-1.1 2.2c1.2 6.2 6 11 12.2 12.2a2 2 0 0 0 2.2-1.1l1.1-2.3a1.5 1.5 0 0 0-.7-2l-2.4-1.2a1.5 1.5 0 0 0-1.8.4l-.8 1a12.4 12.4 0 0 1-4.8-4.8l1-.8a1.5 1.5 0 0 0 .4-1.8L9.5 4.5a1.5 1.5 0 0 0-2-.7Z"
+                ></path>
+              </svg>
+            </span>
+            <span class="link-copy">
+              <strong>Call me</strong>
+              <span>0956 653 1170</span>
+            </span>
+            <span class="arrow" aria-hidden="true">↗</span>
+          </a>
+        </nav>
+
+        <p class="note">Tap a button to connect</p>
+      </section>
+
+      <footer>Built for your next connection · 2026</footer>
+    </main>
+  </body>
+</html>
